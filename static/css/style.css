@@ -16,6 +16,25 @@ html {
   height: 100%;
 }
 
+ol {
+  padding: 6px 8px;
+  font: 16px Arial, Helvetica, sans-serif;
+  background: white;
+  background: rgba(255, 255, 255, 0.8);
+  /*box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);*/
+  /*border-radius: 5px;*/
+  line-height: 24px;
+  color: #555;
+}
+
+li {
+  margin-left: 20px;
+}
+
+option{
+  font: 16px Arial, Helvetica, sans-serif;
+}
+
 /*Legend specific*/
 .legend {
   padding: 6px 8px;

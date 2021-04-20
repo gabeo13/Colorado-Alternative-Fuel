@@ -50,11 +50,15 @@
           <h5>Fuel Type:</h5>
           <select id="selType" onchange="optionChanged(this.value)"></select>
         </div>
+        <ol>
+          <li>Zoom In For Street View</li>
+          <li>Click Station Marker For Additional Information</li>
+        </ol>
       </div>
     </div>
     <div class="row">
       <div class="col-md-4 chart">
-        <div id="radar"></div>
+        <div id="bubble"></div>
       </div>
       <div class="col-md-4 chart">
         <div id="tree"></div>
@@ -67,7 +71,7 @@
     <!-- API key -->
     <script type="text/javascript" src="./static/js/config.js"></script>
     <!-- Our JavaScript -->
-    <!-- <script type="text/javascript" src="./static/js/logic.js"></script> -->
+    <script type="text/javascript" src="./static/js/logic.js"></script>
     <script src="./static/js/app.js"></script>
 
 

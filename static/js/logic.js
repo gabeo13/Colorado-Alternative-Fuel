@@ -6,7 +6,7 @@ var myMap = L.map("mapid", {
     zoom: 7
 });
 
-// Define satellite map layer
+// Define street view map layer
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     maxZoom: 18,
@@ -20,12 +20,12 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 var queryUrl = "http://localhost:5000/api/v1.0/Charging_Stations";
 
 // Perform a GET request to the query URL
-d3.json(queryUrl).then(function (data) {
+function buildMap(mapData) {
 
-    console.log(data)
+    console.log('received map data', mapData)
 
     // Iterate through json and construct markers
-    data.forEach(d => {
+    mapData.forEach(d => {
 
         //Build Color Map for coloring on station fuel type
         var color_arr = ""
@@ -50,7 +50,7 @@ d3.json(queryUrl).then(function (data) {
 
     });
 
-});
+};
 
 // Add legend, see CSS for Styling
 var legend = L.control({ position: "bottomleft" });
