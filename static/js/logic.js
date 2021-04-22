@@ -22,7 +22,19 @@ var queryUrl = "http://localhost:5000/api/v1.0/Charging_Stations";
 // Perform a GET request to the query URL
 function buildMap(mapData) {
 
-    console.log('received map data', mapData)
+    // Define street view map layer
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        maxZoom: 18,
+        id: 'mapbox/streets-v11',
+        tileSize: 512,
+        zoomOffset: -1,
+        accessToken: API_KEY
+    }).addTo(myMap);
+
+    var markerGroup = L.layerGroup().addTo(myMap);
+
+    console.log('received map data', mapData);
 
     // Iterate through json and construct markers
     mapData.forEach(d => {
@@ -46,7 +58,7 @@ function buildMap(mapData) {
         }
 
         //Add Circle Markers, size on magnitude, color on depth, bind info popup on click
-        L.circleMarker([d['latitude'], d['longitude']], { color: color_arr }).bindPopup(`Location: ${d['City']}<br>Station: ${d['station_name']}`).openPopup().addTo(myMap)
+        L.circleMarker([d['latitude'], d['longitude']], { color: color_arr }).bindPopup(`Location: ${d['City']}<br>Station: ${d['station_name']}`).openPopup().addTo(markerGroup);
 
     });
 

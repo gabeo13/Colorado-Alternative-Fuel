@@ -20,33 +20,39 @@ d3.json(jsonPath).then(function (data) {
     console.log(zipUnique);
     console.log(typeUnique);
 
-    var dropDownCity = d3.select('#selCity');
-    var dropDownZip = d3.select('#selZip');
-    var dropDownType = d3.select('#selType');
+    var dropDownCity = d3.select('#City');
+    // var dropDownZip = d3.select('#selZip');
+    var dropDownType = d3.select('#fuel_type_code');
 
     console.log(dropDownCity);
-    console.log(dropDownZip);
+    // console.log(dropDownZip);
     console.log(dropDownType);
 
     dropDownCity.html("");
-    dropDownZip.html("");
+    // dropDownZip.html("");
     dropDownType.html("");
 
     for (i = 0; i < cityUnique.length; i++) {
 
-        dropDownCity.append('option').text(`${cityUnique[i]}`);
+        var city_option = dropDownCity.append('option')
+        city_option.text(`${cityUnique[i]}`)
+            .attr("value", cityUnique[i])
+            .attr("id", "City");
 
     };
 
-    for (i = 0; i < zipUnique.length; i++) {
+    // for (i = 0; i < zipUnique.length; i++) {
 
-        dropDownZip.append('option').text(`${zipUnique[i]}`);
+    //     dropDownZip.append('option').text(`${zipUnique[i]}`);
 
-    };
+    // };
 
     for (i = 0; i < typeUnique.length; i++) {
 
-        dropDownType.append('option').text(`${typeUnique[i]}`);
+        var type_option = dropDownType.append('option')
+        type_option.text(`${typeUnique[i]}`)
+            .attr('value', typeUnique[i])
+            .attr("id", "fuel_type_code");
 
     };
 
@@ -58,65 +64,78 @@ function init() {
 
     d3.json(jsonPath).then(function (data) {
 
-        inputData = data.filter(item => (item.City == 'Denver'))
+        // inputData = data.filter(item => (item.City == 'Denver'))
 
-        buildPlot(inputData); // need to pick values for initializing dashboard
+        buildPlot(data); // need to pick values for initializing dashboard
 
-        buildMap(inputData); // initialize map
+        buildMap(data); // initialize map
     })
 };
 
 init();
 
-// Connect html dropdown menu to plot constructor function
-function optionChanged() {
-
-    var jsonPath = `http://localhost:5000/api/v1.0/Charging_Stations`;
-    d3.json(jsonPath).then(function (data) {
-        // console.log(data);
+var jsonPath = `http://localhost:5000/api/v1.0/Charging_Stations`;
 
 
-        // Select inputs and get values
-        dropDownCity = d3.select('#selCity');
-        var inputCity = dropDownCity.property('value');
-        dropDownZip = d3.select('#selZip');
-        var inputZip = dropDownZip.property('value');
-        dropDownType = d3.select('#selType');
-        var inputType = dropDownType.property('value');
+var filters = {};
 
-        // Console log selection 
-        console.log(inputCity);
-        console.log(inputZip);
-        console.log(inputType);
+function updateFilters() {
 
-        var data = data;
+    // Save the element, value, and id of the filter that was changed
+    var changedElement = d3.select(this)//.properties('value')//.select('option');
+    console.log(changedElement)
+    var elementValue = changedElement.property('value');
+    console.log("elValue", elementValue);
 
-        //Data Filters
-        if (inputCity) {
-            var cityData = data.filter(item => item.City == inputCity);
-            buildPlot(cityData);
-            buildMap(cityData);
-            console.log("City Filter", cityData);
+    var filterId = changedElement.attr('id')
+
+    // If a filter value was entered then add that filterId and value
+    // to the filters list. Otherwise, clear that filter from the filters object
+
+    if (elementValue) {
+        filters[filterId] = elementValue
+    }
+    else {
+        delete filters[filterId];
+    };
+
+    /* delete method */
+    // myMap.eachLayer(function (layer) {
+    //     if (layer instanceof L.layerGroup) {
+    //         myMap.removeLayer(layer)
+    //     }
+    // })
+    myMap.eachLayer(function (layer) {
+        if (myMap.hasLayer(layer)) {
+            myMap.removeLayer(layer)
         }
-        // else if (inputZip) {
-        //     var zipData = data.filter(item => item['Zip Code'] == inputZip);
-        //     buildPlot(zipData);
-        //     console.log("Zip Filter", zipData);
-        // }
-        // else if (inputType) {
-        //     var typeData = data.filter(item => item['fuel_type_code'] == inputType);
-        //     buildPlot(typeData);
-        //     console.log("Type Filter", typeData);
-        // }
-        else {
-            init();
-        };
+    })
+
+    console.log("filters", filters)
+
+    // Call function to apply all filters and rebuild chart
+    filterData()
+
+}
 
 
+function filterData() {
+    d3.json(jsonPath).then(function (data) {
+        // Set the filteredData to the tableData
+        let filteredData = data;
+        // Loop through all of the filters and keep any data that
+        // matches the filter values
+        Object.entries(filters).forEach(([key, value]) => {
+            filteredData = filteredData.filter(row => row[key] === value);
+        });
+        // Finally, rebuild the chart using the filtered Data
+        console.log(filteredData);
+        buildPlot(filteredData);
+        buildMap(filteredData);
     });
-};
+}// end filterdata function
 
-// optionChanged();
+d3.selectAll(".filter").on("change", updateFilters);
 
 // Build the plots
 function buildPlot(plotData) {
@@ -127,6 +146,7 @@ function buildPlot(plotData) {
     var type = [];
     var pop = [];
     var inc = [];
+    var zipType = [];
 
     // Loop through receieved filtered data to fill containers
     for (i = 0; i < plotData.length; i++) {
@@ -135,7 +155,10 @@ function buildPlot(plotData) {
         type.push(plotData[i]['fuel_type_code']);
         pop.push(plotData[i]['Population']);
         inc.push(plotData[i]['Average Household Income']);
+        zipType.push([plotData[i]['Zip Code'], plotData[i]['fuel_type_code']])
     };
+
+    console.log("zipAndType", zipType)
 
     //Map Reduce received fuel station type to unique station and freq of unique station
     var typeMap = type.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
@@ -155,7 +178,7 @@ function buildPlot(plotData) {
     for (i = 0; i < typeMaparray.length; i++) {
         storeXY(typeMaparray[i][0], typeMaparray[i][1], xyArray)
     };
-    console.log('tree map array', xyArray);
+    console.log('basic tree map array', xyArray);
 
     //Construct "x" and "y" variables for bar chart from map reduce function on fuel station type
     var typeKeys = Array.from(typeMap.keys());
@@ -168,9 +191,32 @@ function buildPlot(plotData) {
     var popUnique = pop.filter((item, i, ar) => ar.indexOf(item) === i);
     var incUnique = inc.filter((item, i, ar) => ar.indexOf(item) === i);
 
+    //Construct array for multidimensional treemap
+    // Format [{ name: e['Zip Code'].toString(), data: [{ x: fuelType[i], y: countOfType[i] }] }
+
+    var counter = {};
+
+    zipType.forEach(function (obj) {
+        var key = JSON.stringify(obj)
+        counter[key] = (counter[key] || 0) + 1
+    });
+
+    console.log('counter', counter);
+
+    var parsedCounter = JSON.parse(counter);
+
+    console.log('parsedCounter', parsedCounter);
+
+
+    // var treeArray = counter.map(function (e, i) {
+    //     return { name: e[i][0][0].toString(), data: [{ x: e[i][0][1], y: e[i][1] }] }
+    // });
+
+    // console.log("advanced tree array", treeArray)
+
     //Bring unique value arrays together into required format for bubble chart
     var xyzArray = zipUnique.map(function (e, i) {
-        return { name: e.toString(), data: [popUnique[i], incUnique[i], 20] }
+        return { name: e.toString(), data: [[popUnique[i], incUnique[i], 10]] }
     });
 
     console.log('bubble array', xyzArray);
@@ -249,28 +295,23 @@ function buildPlot(plotData) {
     var chart = new ApexCharts(document.querySelector("#bar"), baroptions);
     chart.render();
 
-    //Tree Map Constructor
-    var treeoptions = {
-        series: [
-            {
-                data: xyArray
+    // // Tree Map Constructor
+    // var treeoptions = {
+    //     series: treeArray,
+    //     legend: {
+    //         show: false
+    //     },
+    //     chart: {
+    //         height: 350,
+    //         type: 'treemap'
+    //     },
+    //     title: {
+    //         text: "Adrienne's Treemap"
+    //     }
+    // };
 
-            }
-        ],
-        legend: {
-            show: false
-        },
-        chart: {
-            height: 350,
-            type: 'treemap'
-        },
-        title: {
-            text: 'Basic Treemap'
-        }
-    };
-
-    var chart2 = new ApexCharts(document.querySelector("#tree"), treeoptions);
-    chart2.render();
+    // var chart2 = new ApexCharts(document.querySelector("#tree"), treeoptions);
+    // chart2.render();
 
     //Construct Plot 3
     var bubbleoptions = {
@@ -290,16 +331,23 @@ function buildPlot(plotData) {
         },
         xaxis: {
             type: 'numeric',
-            categories: popUnique
+            title: {
+                text: 'POPULATION'
+            }
+            // categories: popUnique
         },
-        // yaxis: {
-        //     max: 70
-        // }
+        yaxis: {
+            type: 'numeric',
+            title: {
+                text: 'AVG INCOME'
+            }
+        }
     };
 
     var chart3 = new ApexCharts(document.querySelector("#bubble"), bubbleoptions);
     chart3.render();
 }; // Close Buildplot Function
+
 
 // // Horizontal Bar Chart
 // var baroptions = {
