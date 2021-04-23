@@ -3,8 +3,6 @@ import requests
 from pandas.io.json import json_normalize
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 from flask import Flask, render_template, jsonify
 import pymongo
 
