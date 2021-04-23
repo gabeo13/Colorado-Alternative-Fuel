@@ -64,9 +64,9 @@ function init() {
 
     d3.json(jsonPath).then(function (data) {
 
-        // inputData = data.filter(item => (item.City == 'Denver'))
+        inputData = data.filter(item => (item.City == 'Denver'))
 
-        buildPlot(data); // need to pick values for initializing dashboard
+        buildPlot(inputData); // need to pick values for initializing dashboard
 
         buildMap(data); // initialize map
     })
@@ -99,12 +99,6 @@ function updateFilters() {
         delete filters[filterId];
     };
 
-    /* delete method */
-    // myMap.eachLayer(function (layer) {
-    //     if (layer instanceof L.layerGroup) {
-    //         myMap.removeLayer(layer)
-    //     }
-    // })
     myMap.eachLayer(function (layer) {
         if (myMap.hasLayer(layer)) {
             myMap.removeLayer(layer)
@@ -158,7 +152,54 @@ function buildPlot(plotData) {
         zipType.push([plotData[i]['Zip Code'], plotData[i]['fuel_type_code']])
     };
 
-    console.log("zipAndType", zipType)
+
+
+    var zipMap = zip.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
+
+    var uniqueZip = Array.from(zipMap.keys())
+
+    console.log('uniquezips', uniqueZip);
+
+    var newArray = plotData.map(d => d["Zip Code"])
+    console.log("newArray", newArray);
+
+    var uniques = [];
+    for (i = 0; i < newArray.length; i++) {
+        if (newArray[i] in uniques !== true) {
+            uniques.push(newArray[i])
+        }
+    };
+    console.log("uniques", uniques);
+    console.log('')
+
+    var typeList = ["CNG", "ELEC", "E85", "LPG", "BD"];
+
+    var series = [];
+
+    for (i = 0; i < uniqueZip.length; i++) {
+
+        var filter1 = plotData.filter(d => d['Zip Code'] == uniqueZip[i])
+
+        for (j = 0; j < typeList.length; j++) {
+            var filter2 = filter1.filter(d => d['fuel_type_code'] == typeList[j])
+            var treeDict = { name: uniqueZip[i].toString(), data: [{ x: typeList[j], y: filter2.length }] }
+            series.push(treeDict)
+        }
+    };
+
+    console.log('series', series);
+    // console.log('yVals', series[0]['data'][0]['y']);
+
+    var cleanSeries = [];
+
+    for (i = 0; i < series.length; i++) {
+        if (series[i]['data'][0]['y'] > 0) {
+            cleanSeries.push(series[i])
+        }
+    };
+
+    console.log('cleanSeries', cleanSeries);
+
 
     //Map Reduce received fuel station type to unique station and freq of unique station
     var typeMap = type.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
@@ -190,29 +231,6 @@ function buildPlot(plotData) {
     var zipUnique = zip.filter((item, i, ar) => ar.indexOf(item) === i);
     var popUnique = pop.filter((item, i, ar) => ar.indexOf(item) === i);
     var incUnique = inc.filter((item, i, ar) => ar.indexOf(item) === i);
-
-    //Construct array for multidimensional treemap
-    // Format [{ name: e['Zip Code'].toString(), data: [{ x: fuelType[i], y: countOfType[i] }] }
-
-    var counter = {};
-
-    zipType.forEach(function (obj) {
-        var key = JSON.stringify(obj)
-        counter[key] = (counter[key] || 0) + 1
-    });
-
-    console.log('counter', counter);
-
-    var parsedCounter = JSON.parse(counter);
-
-    console.log('parsedCounter', parsedCounter);
-
-
-    // var treeArray = counter.map(function (e, i) {
-    //     return { name: e[i][0][0].toString(), data: [{ x: e[i][0][1], y: e[i][1] }] }
-    // });
-
-    // console.log("advanced tree array", treeArray)
 
     //Bring unique value arrays together into required format for bubble chart
     var xyzArray = zipUnique.map(function (e, i) {
@@ -295,23 +313,40 @@ function buildPlot(plotData) {
     var chart = new ApexCharts(document.querySelector("#bar"), baroptions);
     chart.render();
 
-    // // Tree Map Constructor
-    // var treeoptions = {
-    //     series: treeArray,
-    //     legend: {
-    //         show: false
-    //     },
-    //     chart: {
-    //         height: 350,
-    //         type: 'treemap'
-    //     },
-    //     title: {
-    //         text: "Adrienne's Treemap"
-    //     }
-    // };
+    // Tree Map Constructor
+    var treeoptions = {
+        series: cleanSeries,
+        legend: {
+            show: false
+        },
+        chart: {
+            height: 350,
+            type: 'treemap'
+        },
+        tooltip: {
+            theme: 'dark',
+            x: {
+                show: false
+            },
+            // y: {
+            //     title: {
+            //         formatter: function () {
+            //             names = []
+            //             for (i = 0; i < cleanSeries.length; i++) {
+            //                 names.push(`Zip ${cleanSeries[i]['name']}`)
+            //             }
+            //             return names
+            //         }
+            //     }
+            // }
+        },
+        title: {
+            text: "Adrienne's Treemap"
+        }
+    };
 
-    // var chart2 = new ApexCharts(document.querySelector("#tree"), treeoptions);
-    // chart2.render();
+    var chart2 = new ApexCharts(document.querySelector("#tree"), treeoptions);
+    chart2.render();
 
     //Construct Plot 3
     var bubbleoptions = {
@@ -347,197 +382,3 @@ function buildPlot(plotData) {
     var chart3 = new ApexCharts(document.querySelector("#bubble"), bubbleoptions);
     chart3.render();
 }; // Close Buildplot Function
-
-
-// // Horizontal Bar Chart
-// var baroptions = {
-//     series: [{
-//         data: [400, 430, 448, 470, 540, 580, 690, 1100, 1200, 1380]
-//     }],
-//     chart: {
-//         type: 'bar',
-//         height: 380
-//     },
-//     plotOptions: {
-//         bar: {
-//             barHeight: '100%',
-//             distributed: true,
-//             horizontal: true,
-//             dataLabels: {
-//                 position: 'bottom'
-//             },
-//         }
-//     },
-//     colors: ['#33b2df', '#546E7A', '#d4526e', '#13d8aa', '#A5978B', '#2b908f', '#f9a3a4', '#90ee7e',
-//         '#f48024', '#69d2e7'
-//     ],
-//     dataLabels: {
-//         enabled: true,
-//         textAnchor: 'start',
-//         style: {
-//             colors: ['#fff']
-//         },
-//         formatter: function (val, opt) {
-//             return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val
-//         },
-//         offsetX: 0,
-//         dropShadow: {
-//             enabled: true
-//         }
-//     },
-//     stroke: {
-//         width: 1,
-//         colors: ['#fff']
-//     },
-//     xaxis: {
-//         categories: ['South Korea', 'Canada', 'United Kingdom', 'Netherlands', 'Italy', 'France', 'Japan',
-//             'United States', 'China', 'India'
-//         ],
-//     },
-//     yaxis: {
-//         labels: {
-//             show: false
-//         }
-//     },
-//     title: {
-//         text: 'Custom DataLabels',
-//         align: 'center',
-//         floating: true
-//     },
-//     subtitle: {
-//         text: 'Category Names as DataLabels inside bars',
-//         align: 'center',
-//     },
-//     tooltip: {
-//         theme: 'dark',
-//         x: {
-//             show: false
-//         },
-//         y: {
-//             title: {
-//                 formatter: function () {
-//                     return ''
-//                 }
-//             }
-//         }
-//     }
-// };
-
-// var chart = new ApexCharts(document.querySelector("#bar"), baroptions);
-// chart.render();
-
-
-// var treeoptions = {
-//     series: [
-//         {
-//             data: [
-//                 {
-//                     x: 'New Delhi',
-//                     y: 218
-//                 },
-//                 {
-//                     x: 'Kolkata',
-//                     y: 149
-//                 },
-//                 {
-//                     x: 'Mumbai',
-//                     y: 184
-//                 },
-//                 {
-//                     x: 'Ahmedabad',
-//                     y: 55
-//                 },
-//                 {
-//                     x: 'Bangaluru',
-//                     y: 84
-//                 },
-//                 {
-//                     x: 'Pune',
-//                     y: 31
-//                 },
-//                 {
-//                     x: 'Chennai',
-//                     y: 70
-//                 },
-//                 {
-//                     x: 'Jaipur',
-//                     y: 30
-//                 },
-//                 {
-//                     x: 'Surat',
-//                     y: 44
-//                 },
-//                 {
-//                     x: 'Hyderabad',
-//                     y: 68
-//                 },
-//                 {
-//                     x: 'Lucknow',
-//                     y: 28
-//                 },
-//                 {
-//                     x: 'Indore',
-//                     y: 19
-//                 },
-//                 {
-//                     x: 'Kanpur',
-//                     y: 29
-//                 }
-//             ]
-//         }
-//     ],
-//     legend: {
-//         show: false
-//     },
-//     chart: {
-//         height: 350,
-//         type: 'treemap'
-//     },
-//     title: {
-//         text: 'Basic Treemap'
-//     }
-// };
-
-// var chart2 = new ApexCharts(document.querySelector("#tree"), treeoptions);
-// chart2.render();
-
-// var radaroptions = {
-//     series: [{
-//         name: 'Series 1',
-//         data: [80, 50, 30, 40, 100, 20],
-//     }, {
-//         name: 'Series 2',
-//         data: [20, 30, 40, 80, 20, 80],
-//     }, {
-//         name: 'Series 3',
-//         data: [44, 76, 78, 13, 43, 10],
-//     }],
-//     chart: {
-//         height: 350,
-//         type: 'radar',
-//         dropShadow: {
-//             enabled: true,
-//             blur: 1,
-//             left: 1,
-//             top: 1
-//         }
-//     },
-//     title: {
-//         text: 'Radar Chart - Multi Series'
-//     },
-//     stroke: {
-//         width: 2
-//     },
-//     fill: {
-//         opacity: 0.1
-//     },
-//     markers: {
-//         size: 0
-//     },
-//     xaxis: {
-//         categories: ['2011', '2012', '2013', '2014', '2015', '2016']
-//     }
-// };
-
-// var chart3 = new ApexCharts(document.querySelector("#radar"), radaroptions);
-// chart3.render();
