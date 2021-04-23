@@ -7,7 +7,7 @@ from flask import Flask, render_template, jsonify
 import pymongo
 import os
 
-os.getenv("mapbox_key")
+# os.getenv("mapbox_key")
 
 # Create an instance of our Flask app.
 app = Flask(__name__)
