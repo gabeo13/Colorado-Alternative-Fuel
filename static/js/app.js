@@ -341,7 +341,7 @@ function buildPlot(plotData) {
             // }
         },
         title: {
-            text: "Adrienne's Treemap"
+            text: "Multi-Dimensional Treemap"
         }
     };
 
