@@ -247,7 +247,8 @@ function buildPlot(plotData) {
         }],
         chart: {
             type: 'bar',
-            height: 350
+            height: 350,
+            width: "100%"
         },
         plotOptions: {
             bar: {
@@ -321,7 +322,8 @@ function buildPlot(plotData) {
         },
         chart: {
             height: 350,
-            type: 'treemap'
+            type: 'treemap',
+            width: "100%"
         },
         tooltip: {
             theme: 'dark',
@@ -354,6 +356,7 @@ function buildPlot(plotData) {
         chart: {
             height: 350,
             type: 'bubble',
+            width: "100%"
         },
         dataLabels: {
             enabled: false
@@ -375,6 +378,18 @@ function buildPlot(plotData) {
             type: 'numeric',
             title: {
                 text: 'AVG INCOME'
+            }
+        },
+        tooltip: {
+            theme: 'dark',
+            x: {
+                show: false
+            },
+            y: {
+                show: false
+            },
+            z: {
+                show: false
             }
         }
     };
