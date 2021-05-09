@@ -17,11 +17,15 @@ d3.json(`/login`).then(function (info) {
         accessToken: info
     }).addTo(myMap);
 
-    // // Store our API endpoint inside queryUrl
-    // var queryUrl = "http://localhost:5000/api/v1.0/Charging_Stations";
+});
 
-    // Perform a GET request to the query URL
-    function buildMap(mapData) {
+// // Store our API endpoint inside queryUrl
+// var queryUrl = "http://localhost:5000/api/v1.0/Charging_Stations";
+
+// Perform a GET request to the query URL
+function buildMap(mapData) {
+
+    d3.json(`/login`).then(function (info) {
 
         // Define street view map layer
         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -63,22 +67,23 @@ d3.json(`/login`).then(function (info) {
 
         });
 
-    };
+    });
 
-    // Add legend, see CSS for Styling
-    var legend = L.control({ position: "bottomleft" });
+};
 
-    legend.onAdd = function (myMap) {
-        var div = L.DomUtil.create("div", "legend");
-        div.innerHTML += "<h4>Alternative Fuel Station Type</h4>";
-        div.innerHTML += '<i style="background: #34495e"></i><span>LPG</span><br>';
-        div.innerHTML += '<i style="background: #f1c40f"></i><span>ELEC</span><br>';
-        div.innerHTML += '<i style="background: #c0392b"></i><span>E85</span><br>';
-        div.innerHTML += '<i style="background: #2980b9"></i><span>CNG</span><br>';
-        div.innerHTML += '<i style="background: #16a085"></i><span>BD</span><br>';
+// Add legend, see CSS for Styling
+var legend = L.control({ position: "bottomleft" });
 
-        return div;
-    };
+legend.onAdd = function (myMap) {
+    var div = L.DomUtil.create("div", "legend");
+    div.innerHTML += "<h4>Alternative Fuel Station Type</h4>";
+    div.innerHTML += '<i style="background: #34495e"></i><span>LPG</span><br>';
+    div.innerHTML += '<i style="background: #f1c40f"></i><span>ELEC</span><br>';
+    div.innerHTML += '<i style="background: #c0392b"></i><span>E85</span><br>';
+    div.innerHTML += '<i style="background: #2980b9"></i><span>CNG</span><br>';
+    div.innerHTML += '<i style="background: #16a085"></i><span>BD</span><br>';
 
-    legend.addTo(myMap);
-});
+    return div;
+};
+
+legend.addTo(myMap);

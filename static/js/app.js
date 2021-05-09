@@ -76,7 +76,6 @@ init();
 
 var jsonPath = `/api/v1.0/Charging_Stations`;
 
-
 var filters = {};
 
 function updateFilters() {
