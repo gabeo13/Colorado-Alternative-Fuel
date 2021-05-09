@@ -13,10 +13,15 @@ import os
 app = Flask(__name__)
 
 # Create connection variable
-conn = 'mongodb://localhost:27017'
+# conn = 'mongodb://localhost:27017'
 
 # Pass connection to the pymongo instance.
-client = pymongo.MongoClient(conn)
+# client = pymongo.MongoClient(conn)
+
+
+client = pymongo.MongoClient(
+    f"mongodb+srv://power_user:{os.environ.get('mongo_pw')}@heroku-cluster.hdjnt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+
 
 # create database
 db = client.charging_stationDB
