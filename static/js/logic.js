@@ -13,7 +13,7 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
     id: 'mapbox/streets-v11',
     tileSize: 512,
     zoomOffset: -1,
-    accessToken: API_KEY
+    accessToken: mapbox_key
 }).addTo(myMap);
 
 // Store our API endpoint inside queryUrl
@@ -29,7 +29,7 @@ function buildMap(mapData) {
         id: 'mapbox/streets-v11',
         tileSize: 512,
         zoomOffset: -1,
-        accessToken: API_KEY
+        accessToken: mapbox_key
     }).addTo(myMap);
 
     var markerGroup = L.layerGroup().addTo(myMap);
