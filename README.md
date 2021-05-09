@@ -10,7 +10,7 @@ There will need to be an increase in charging stations to accommodate the growin
 
 This project focuses on the availability of alternative fuel stations in Colorado and develops an easy to use dashboard to find stations by area and alternative fuel type such as Electric, CNG, and Biodiesel.
 
-[Follow this link to Heroku Application]("https://colorado-alt-fuel-stations.herokuapp.com/")
+[Follow this link to Heroku Application](https://colorado-alt-fuel-stations.herokuapp.com/)
 
 ---
 ## Potential Use Cases
