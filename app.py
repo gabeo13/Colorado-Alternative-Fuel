@@ -29,7 +29,7 @@ db = client.charging_stationDB
 
 @app.route("/login")
 def mapbox():
-    return os.environ.get('mapbox_key')
+    return jsonify(os.environ.get('mapbox_key'))
 
 
 @app.route("/")
