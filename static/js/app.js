@@ -1,5 +1,5 @@
 //Read in JSON file and establish dropdown menu of options
-var jsonPath = `http://localhost:5000/api/v1.0/Charging_Stations`;
+var jsonPath = `/api/v1.0/Charging_Stations`;
 d3.json(jsonPath).then(function (data) {
     console.log("Original data from api call", data);
 
@@ -60,7 +60,7 @@ d3.json(jsonPath).then(function (data) {
 
 // // Initialize Dashboard with an ID
 function init() {
-    var jsonPath = `http://localhost:5000/api/v1.0/Charging_Stations`;
+    var jsonPath = `/api/v1.0/Charging_Stations`;
 
     d3.json(jsonPath).then(function (data) {
 
@@ -74,7 +74,7 @@ function init() {
 
 init();
 
-var jsonPath = `http://localhost:5000/api/v1.0/Charging_Stations`;
+var jsonPath = `/api/v1.0/Charging_Stations`;
 
 
 var filters = {};
@@ -152,8 +152,6 @@ function buildPlot(plotData) {
         zipType.push([plotData[i]['Zip Code'], plotData[i]['fuel_type_code']])
     };
 
-
-
     var zipMap = zip.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
 
     var uniqueZip = Array.from(zipMap.keys())
@@ -188,7 +186,6 @@ function buildPlot(plotData) {
     };
 
     console.log('series', series);
-    // console.log('yVals', series[0]['data'][0]['y']);
 
     var cleanSeries = [];
 
