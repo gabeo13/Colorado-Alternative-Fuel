@@ -1,11 +1,12 @@
+// Create our map object
+var myMap = L.map("mapid", {
+    center: [
+        39.0501, -105.7821
+    ],
+    zoom: 7
+});
+
 d3.json(`/login`).then(function (info) {
-    // Create our map object
-    var myMap = L.map("mapid", {
-        center: [
-            39.0501, -105.7821
-        ],
-        zoom: 7
-    });
 
     // Define street view map layer
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
