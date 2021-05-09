@@ -16,8 +16,8 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
     accessToken: mapbox_key
 }).addTo(myMap);
 
-// Store our API endpoint inside queryUrl
-var queryUrl = "http://localhost:5000/api/v1.0/Charging_Stations";
+// // Store our API endpoint inside queryUrl
+// var queryUrl = "http://localhost:5000/api/v1.0/Charging_Stations";
 
 // Perform a GET request to the query URL
 function buildMap(mapData) {
